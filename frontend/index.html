@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+        content="CineVerse - Book movie tickets, explore the latest movies and reserve your favourite seats.">
+
+    <title>CineVerse | Movie Ticket Booking</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* =========================================================
+           CINEVERSE MOVIE FILTERS + MOVIE GRID
+           ========================================================= */
+
+        .movie-filters {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            gap: 10px !important;
+            width: 100% !important;
+            margin: 28px 0 32px !important;
+        }
+
+        .movie-filter-btn {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            flex: 0 0 auto !important;
+
+            padding: 11px 20px !important;
+
+            border: 1px solid #27344d !important;
+            border-radius: 999px !important;
+
+            background: #111a2b !important;
+            color: #9ba9c0 !important;
+
+            font-family: inherit !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            line-height: 1 !important;
+
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .movie-filter-btn:hover {
+            color: #ffffff !important;
+            border-color: #f20d46 !important;
+            background: #1b2438 !important;
+            transform: translateY(-1px);
+        }
+
+        .movie-filter-btn.active {
+            background: #f20d46 !important;
+            color: #ffffff !important;
+            border-color: #f20d46 !important;
+            box-shadow: 0 8px 20px rgba(242, 13, 70, 0.25) !important;
+        }
+
+
+        /* =========================================================
+           MOVIE GRID
+           ========================================================= */
+
+        #movies .movies-grid {
+            display: grid !important;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr)) !important;
+
+            grid-auto-flow: row !important;
+            grid-auto-rows: auto !important;
+
+            align-items: start !important;
+
+            gap: 24px !important;
+
+            width: 100% !important;
+            max-width: 1400px !important;
+
+            margin: 0 auto !important;
+        }
+
+
+        /* =========================================================
+           MOVIE CARDS
+           ========================================================= */
+
+        #movies .movies-grid .movie-card {
+            display: flex !important;
+            flex-direction: column !important;
+
+            grid-column: auto !important;
+            grid-row: auto !important;
+
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: none !important;
+
+            margin: 0 !important;
+
+            box-sizing: border-box !important;
+        }
+
+
+        /* =========================================================
+           POSTERS
+           ========================================================= */
+
+        #movies .movies-grid .card-poster {
+            width: 100% !important;
+            height: auto !important;
+
+            aspect-ratio: 2 / 3 !important;
+
+            flex: 0 0 auto !important;
+
+            overflow: hidden !important;
+        }
+
+        #movies .movies-grid .card-poster img {
+            display: block !important;
+
+            width: 100% !important;
+            height: 100% !important;
+
+            max-width: none !important;
+
+            object-fit: cover !important;
+        }
+
+
+        /* =========================================================
+           CARD BODY
+           ========================================================= */
+
+        #movies .movies-grid .card-body {
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+
+        /* =========================================================
+           FILTERED CARDS
+           ========================================================= */
+
+        #movies .movies-grid .movie-card.filter-hidden,
+        .movie-card.filter-hidden {
+            display: none !important;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            #movies .movies-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr)) !important;
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            #movies .movies-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr)) !important;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            #movies .movies-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .movie-filters {
+                overflow-x: auto !important;
+                flex-wrap: nowrap !important;
+                padding-bottom: 8px !important;
+            }
+
+            .movie-filter-btn {
+                flex-shrink: 0 !important;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================== -->
+
+    <header class="navbar">
+
+        <div class="nav-container">
+
+            <a href="#" class="brand-logo">
+                <span class="logo-icon">🎬</span>
+                <span>Cine<span class="logo-highlight">Verse</span></span>
+            </a>
+
+            <nav>
+
+                <ul class="nav-links">
+
+                    <li>
+                        <a href="#" class="nav-link active">
+                            Home
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#movies" class="nav-link">
+                            Movies
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#trending" class="nav-link">
+                            Trending
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#coming-soon" class="nav-link">
+                            Coming Soon
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#my-bookings" class="nav-link" id="myBookingsBtn">
+                            My Bookings
+                        </a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+
+            <div class="nav-search">
+
+                <span>⌕</span>
+
+                <input type="text" id="movieSearch" placeholder="Search movies...">
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================================
+         HERO SECTION
+    ========================================================== -->
+
+    <section class="hero-section">
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+
+            <span class="hero-badge">
+                🔥 NOW SHOWING
+            </span>
+
+            <h1 class="hero-title">
+                Experience Movies<br>
+                Like Never Before.
+            </h1>
+
+            <p class="hero-description">
+                Discover the latest blockbusters, find your favourite
+                seats and enjoy the ultimate cinema experience.
+            </p>
+
+
+            <div class="hero-movie-info">
+
+                <span>⭐ 8.7/10</span>
+
+                <span>•</span>
+
+                <span>Action</span>
+
+                <span>•</span>
+
+                <span>2h 46m</span>
+
+            </div>
+
+
+            <div class="hero-actions">
+
+                <a href="#movies" class="btn btn-primary">
+                    🎟️ Browse Movies
+                </a>
+
+                <button class="btn btn-secondary hero-trailer-btn">
+                    ▶ Watch Trailer
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-scroll">
+            ↓ Scroll to explore
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================================================
+         QUICK FEATURES
+    ========================================================== -->
+
+    <section class="features-section">
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🎟️
+            </div>
+
+            <div>
+
+                <h3>
+                    Easy Booking
+                </h3>
+
+                <p>
+                    Book your tickets in seconds.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                💺
+            </div>
+
+            <div>
+
+                <h3>
+                    Choose Your Seat
+                </h3>
+
+                <p>
+                    Pick the perfect seat.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ⚡
+            </div>
+
+            <div>
+
+                <h3>
+                    Instant Confirmation
+                </h3>
+
+                <p>
+                    Get your ticket instantly.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔒
+            </div>
+
+            <div>
+
+                <h3>
+                    Secure Booking
+                </h3>
+
+                <p>
+                    Your reservation is protected.
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <main>
+
+
+        <!-- =====================================================
+             NOW SHOWING
+        ====================================================== -->
+
+        <section id="movies" class="movies-section">
+
+
+            <div class="section-header-row">
+
+
+                <div>
+
+                    <span class="section-kicker">
+                        IN CINEMAS NOW
+                    </span>
+
+                    <h2 class="section-title">
+                        Now Showing
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Choose from the latest movies playing in cinemas.
+                    </p>
+
+                </div>
+
+
+                <button class="view-all-btn">
+                    View All →
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MOVIE FILTERS
+            ================================================== -->
+
+            <div class="movie-filters">
+
+                <button type="button" class="movie-filter-btn active" data-filter="all">
+
+                    All
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="action">
+
+                    Action
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="sci-fi">
+
+                    Sci-Fi
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="drama">
+
+                    Drama
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="comedy">
+
+                    Comedy
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="superhero">
+
+                    Superhero
+
+                </button>
+
+
+                <button type="button" class="movie-filter-btn" data-filter="adventure">
+
+                    Adventure
+
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MOVIE GRID
+            ================================================== -->
+
+            <div id="moviesGrid" class="movies-grid">
+                <div class="movie-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading movies from cinema database...</p>
+                </div>
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             TRENDING
+        ====================================================== -->
+
+        <section id="trending" class="movies-section alternate-section">
+
+            <div class="section-header-row">
+
+                <div>
+
+                    <span class="section-kicker">
+                        MOST WATCHED
+                    </span>
+
+                    <h2 class="section-title">
+                        Trending Now 🔥
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Top-rated blockbusters everyone is talking about.
+                    </p>
+
+                </div>
+
+                <a href="#movies" class="view-all-btn">
+                    View All Movies →
+                </a>
+
+            </div>
+
+            <div id="trendingGrid" class="movies-grid">
+                <div class="movie-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading trending movies...</p>
+                </div>
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             COMING SOON
+        ====================================================== -->
+
+        <section id="coming-soon" class="movies-section">
+
+            <div class="section-header-row">
+
+                <div>
+
+                    <span class="section-kicker">
+                        COMING SOON
+                    </span>
+
+                    <h2 class="section-title">
+                        Upcoming Releases 🍿
+                    </h2>
+
+                    <p class="section-subtitle">
+                        Blockbusters heading to CineVerse soon. Mark your calendars!
+                    </p>
+
+                </div>
+
+                <a href="#movies" class="view-all-btn">
+                    ← Now Showing
+                </a>
+
+            </div>
+
+            <div class="coming-soon-grid">
+
+                <!-- UPCOMING MOVIE 1 -->
+                <article class="coming-movie-card">
+                    <div class="card-poster">
+                        <img src="https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg"
+                            alt="Avatar: Fire and Ash">
+                        <span class="genre-badge">
+                            Sci-Fi
+                        </span>
+                        <div class="release-date-badge">
+                            🗓️ 19 DEC 2026
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="movie-title">
+                            Avatar: Fire and Ash
+                        </h3>
+                        <div class="movie-meta">
+                            <span>Sci-Fi • Adventure</span>
+                            <span class="rating">🔥 Upcoming</span>
+                        </div>
+                        <button type="button" class="btn btn-coming-soon" disabled>
+                            ⏳ Coming Soon
+                        </button>
+                    </div>
+                </article>
+
+                <!-- UPCOMING MOVIE 2 -->
+                <article class="coming-movie-card">
+                    <div class="card-poster">
+                        <img src="https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg"
+                            alt="The Batman: Part II">
+                        <span class="genre-badge">
+                            Action
+                        </span>
+                        <div class="release-date-badge">
+                            🗓️ 02 OCT 2026
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="movie-title">
+                            The Batman: Part II
+                        </h3>
+                        <div class="movie-meta">
+                            <span>Action • Crime</span>
+                            <span class="rating">⭐ Anticipated</span>
+                        </div>
+                        <button type="button" class="btn btn-coming-soon" disabled>
+                            ⏳ Coming Soon
+                        </button>
+                    </div>
+                </article>
+
+                <!-- UPCOMING MOVIE 3 -->
+                <article class="coming-movie-card">
+                    <div class="card-poster">
+                        <img src="https://image.tmdb.org/t/p/w500/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg"
+                            alt="Gladiator II">
+                        <span class="genre-badge">
+                            Adventure
+                        </span>
+                        <div class="release-date-badge">
+                            🗓️ 15 NOV 2026
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="movie-title">
+                            Gladiator II
+                        </h3>
+                        <div class="movie-meta">
+                            <span>Action • Drama</span>
+                            <span class="rating">🎬 In Production</span>
+                        </div>
+                        <button type="button" class="btn btn-coming-soon" disabled>
+                            ⏳ Coming Soon
+                        </button>
+                    </div>
+                </article>
+
+                <!-- UPCOMING MOVIE 4 -->
+                <article class="coming-movie-card">
+                    <div class="card-poster">
+                        <img src="https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg"
+                            alt="Avengers: Secret Wars">
+                        <span class="genre-badge">
+                            Marvel
+                        </span>
+                        <div class="release-date-badge">
+                            🗓️ 07 MAY 2027
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="movie-title">
+                            Avengers: Secret Wars
+                        </h3>
+                        <div class="movie-meta">
+                            <span>Action • Sci-Fi</span>
+                            <span class="rating">🔥 Most Wanted</span>
+                        </div>
+                        <button type="button" class="btn btn-coming-soon" disabled>
+                            ⏳ Coming Soon
+                        </button>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================================================
+         BOOKING MODAL
+    ========================================================== -->
+
+    <div id="bookingModal" class="modal-overlay hidden">
+
+
+        <div class="modal-content booking-modal">
+
+
+            <div id="bookingFormView">
+
+
+                <div class="modal-header">
+
+                    <span class="modal-badge">
+                        🎟️ Ticket Reservation
+                    </span>
+
+                    <h3 id="modalMovieTitle">
+                        Book Tickets
+                    </h3>
+
+                </div>
+
+
+
+                <!-- SHOWTIME -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Select Showtime
+                    </label>
+
+
+                    <div class="showtime-options" id="showtimeContainer">
+
+
+                        <button type="button" class="showtime-btn active" data-time="10:00 AM">
+
+                            10:00 AM
+
+                        </button>
+
+
+                        <button type="button" class="showtime-btn" data-time="2:00 PM">
+
+                            2:00 PM
+
+                        </button>
+
+
+                        <button type="button" class="showtime-btn" data-time="7:00 PM">
+
+                            7:00 PM
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SCREEN -->
+
+                <div class="screen-wrapper">
+
+                    <div class="screen">
+                        SCREEN
+                    </div>
+
+                </div>
+
+
+
+                <!-- SEAT LEGEND -->
+
+                <div class="seat-legend">
+
+
+                    <div class="legend-item">
+
+                        <span class="seat-sample available">
+                        </span>
+
+                        Available
+
+                    </div>
+
+
+                    <div class="legend-item">
+
+                        <span class="seat-sample selected">
+                        </span>
+
+                        Selected
+
+                    </div>
+
+
+                    <div class="legend-item">
+
+                        <span class="seat-sample booked">
+                        </span>
+
+                        Booked
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- SEATS -->
+
+                <div class="seat-grid-container">
+
+                    <div id="seatGrid" class="seat-grid">
+                    </div>
+
+                </div>
+
+
+
+                <!-- BOOKING SUMMARY -->
+
+                <div class="booking-summary">
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Selected Seats
+                        </span>
+
+                        <span id="selectedSeatsList" class="summary-value highlight">
+
+                            None
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span class="summary-label">
+                            Total Amount
+                        </span>
+
+                        <span id="totalPrice" class="summary-value price">
+
+                            ₹0
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <p id="bookingWarning" class="warning-text hidden">
+
+                    Please select at least one seat to proceed with booking.
+
+                </p>
+
+
+
+                <div class="modal-actions">
+
+
+                    <button id="confirmBookingBtn" class="btn btn-primary btn-block">
+
+                        Confirm Booking
+
+                    </button>
+
+
+                    <button id="closeModalBtn" class="btn btn-secondary btn-block">
+
+                        Cancel
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BOOKING SUCCESS
+            ================================================== -->
+
+            <div id="bookingSuccessView" class="hidden">
+
+
+                <div class="success-icon">
+                    🎉
+                </div>
+
+
+                <h3 class="success-title">
+                    Booking Confirmed!
+                </h3>
+
+
+                <p class="success-subtitle">
+                    Your tickets have been reserved successfully.
+                </p>
+
+
+
+                <div class="ticket-details-card">
+
+
+                    <div class="ticket-row">
+
+                        <span class="ticket-label">
+                            Movie
+                        </span>
+
+                        <span id="ticketMovieName" class="ticket-value">
+                        </span>
+
+                    </div>
+
+
+                    <div class="ticket-row">
+
+                        <span class="ticket-label">
+                            Showtime
+                        </span>
+
+                        <span id="ticketShowtime" class="ticket-value">
+                        </span>
+
+                    </div>
+
+
+                    <div class="ticket-row">
+
+                        <span class="ticket-label">
+                            Seats
+                        </span>
+
+                        <span id="ticketSeats" class="ticket-value highlight">
+                        </span>
+
+                    </div>
+
+
+                    <div class="ticket-row">
+
+                        <span class="ticket-label">
+                            Total Paid
+                        </span>
+
+                        <span id="ticketTotalAmount" class="ticket-value price">
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+                <button id="finishBookingBtn" class="btn btn-primary btn-block">
+
+                    Done
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="footer">
+
+
+        <div class="footer-container">
+
+
+            <div class="footer-brand">
+                🎬 CineVerse
+            </div>
+
+
+            <p>
+                Your ultimate destination for movie tickets.
+            </p>
+
+
+            <div class="footer-links">
+
+                <a href="#">
+                    Privacy
+                </a>
+
+                <a href="#">
+                    Terms
+                </a>
+
+                <a href="#">
+                    Contact
+                </a>
+
+            </div>
+
+
+            <p class="copyright">
+                © 2026 CineVerse. Built for learning &amp; demonstration.
+            </p>
+
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =========================================================
+         MOVIE DETAILS MODAL
+    ========================================================== -->
+
+    <div id="movieDetailsModal" class="movie-details-overlay hidden">
+
+
+        <div class="movie-details-modal">
+
+
+            <button id="closeMovieDetails" class="movie-details-close">
+
+                ×
+
+            </button>
+
+
+            <div class="movie-details-content">
+
+
+                <div class="movie-details-poster">
+
+                    <img id="detailsPoster" src="" alt="Movie Poster">
+
+                </div>
+
+
+                <div class="movie-details-info">
+
+
+                    <span id="detailsGenre" class="details-genre">
+
+                        ACTION
+
+                    </span>
+
+
+                    <h2 id="detailsTitle">
+                        Movie Title
+                    </h2>
+
+
+                    <div class="details-meta">
+
+                        <span id="detailsRating">
+                            ⭐ 8.7
+                        </span>
+
+                        <span>
+                            •
+                        </span>
+
+                        <span id="detailsDuration">
+                            2h 30m
+                        </span>
+
+                        <span>
+                            •
+                        </span>
+
+                        <span>
+                            English
+                        </span>
+
+                    </div>
+
+
+                    <p id="detailsDescription">
+                        Experience this movie on the big screen with CineVerse.
+                    </p>
+
+
+                    <div class="details-actions">
+
+
+                        <button id="detailsBookBtn" class="btn btn-primary">
+
+                            🎟️ Book Tickets
+
+                        </button>
+
+
+                        <button id="detailsTrailerBtn" class="btn btn-secondary">
+
+                            ▶ Watch Trailer
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         TRAILER MODAL
+    ========================================================== -->
+
+    <div id="trailerModal" class="trailer-overlay hidden">
+
+
+        <div class="trailer-modal">
+
+
+            <button id="closeTrailerBtn" class="trailer-close">
+
+                ×
+
+            </button>
+
+
+            <div class="trailer-header">
+
+                <span>
+                    🎬 CINEVERSE
+                </span>
+
+                <h2 id="trailerMovieTitle">
+                    Movie Trailer
+                </h2>
+
+            </div>
+
+
+            <div class="trailer-video">
+
+                <div class="trailer-placeholder">
+
+                    <div class="play-circle">
+                        ▶
+                    </div>
+
+                    <h3 id="trailerMessage">
+                        Trailer Preview
+                    </h3>
+
+                    <p>
+                        Watch the latest trailer in the cinema experience.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="trailer-footer">
+
+                <span>
+                    🔴 HD
+                </span>
+
+                <span>
+                    •
+                </span>
+
+                <span>
+                    Official Trailer
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- YOUR MAIN JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
